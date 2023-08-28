@@ -1,0 +1,17 @@
+zod 
+next-auth
+prisma
+tailwindcss
+bcrypt
+@next-auth/prisma-adapter
+@radix-ui/react-icons
+class-variance-authority
+axios
+react-hot-toast
+nodemailer
+flowbite-react
+@tremor/react
+speakeasy
+qrcode
+jsonwebtoken
+limiter

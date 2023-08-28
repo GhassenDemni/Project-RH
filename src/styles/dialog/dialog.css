@@ -1,0 +1,61 @@
+dialog {
+  width: 100%;
+  padding: 15px !important;
+  z-index: -1;
+
+  &:modal {
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: #00000017 1px 11px 18px 13px;
+
+    & form {
+      min-height: 100px;
+    }
+
+    &::backdrop {
+      /* backdrop-filter: blur(5px); */
+      background: black;
+      opacity: 0.6;
+    }
+
+    &[open] {
+      animation: show 0.2s ease normal;
+    }
+  }
+
+  & header {
+    position: sticky;
+    top: 0;
+  }
+
+  & footer {
+    position: sticky;
+    bottom: 0;
+  }
+}
+
+body:has(dialog:modal[open]) {
+  overflow: hidden;
+}
+
+@keyframes show {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hide {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}

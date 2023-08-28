@@ -1,0 +1,243 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  email             String          @unique
+  username          String          @unique
+  first_name        String
+  last_name         String
+  name              String
+  password          String
+  phone             String?
+  emailVerified     DateTime?
+  image             String?
+  avatar            String?
+  hobbies           String[]
+  birthdate         DateTime?
+  gender            Gender?
+  status            UserStatus?     @default(ACTIVE)
+  occupation        String?
+  skills            String[]
+  certifications    String[]
+  bio               String?
+  email_verified    DateTime?
+  education_level   EducationLevel?
+  education_history String?
+
+  // 1 to 1 relationship with the Role model.
+  Role         Role?        @relation(fields: [role_id], references: [id])
+  role_id      String?      @db.ObjectId
+  Employee     Employee?
+  // 1,1 One-to-one relationship with the Address model.
+  // Represents the user's address details.
+  Address      Address?
+  // 1,N One-to-many relationship with the Session model.
+  // Represents user sessions.
+  Sessions     Session[]
+  // 1,N One-to-many relationship with the AuthOption model.
+  // Represents authentication options available to the user (e.g., password, two-factor, OAuth).
+  auth_options AuthOption[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([username, email])
+  @@map(name: "users")
+}
+
+model Employee {
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  Department         Department         @relation(fields: [department_id], references: [id])
+  department_id      String             @db.ObjectId
+  position           String
+  employment_type    EmploymentTypeEnum @default(FULL_TIME)
+  salary             Float
+  hire_date          DateTime           @default(now())
+  status             EmployeeStatus?    @default(ACTIVE)
+  benefits           String[]
+  work_schedule      Json? // monday: { from: '9:00 AM', to: '5:00 PM' }, tuesday: { from: '9:00 AM', to: '5:00 PM' },
+  termination_date   DateTime?
+  termination_reason String?
+  performance_rating Float?             @default(0) //0 to 1
+  leave_balance      Int?               @default(0) // IN DAYS
+  employment_history String?
+
+  // employment_history Array of objects?
+  // training_records Array of objects?
+  // performance_reviews Array of objects?
+
+  // Methods or computed fields specific to employees
+  // projects   Project[] // Relation to the Project model for the projects the employee is associated with
+  // Relationships with other models
+  // manager    Employee?  @relation("ManagerToEmployees", fields: [manager_id], references: [id]) // Relation to the manager of the employee
+  // manager_id String     @unique @db.ObjectId // Unique identifier referencing the manager's ID
+  // employees  Employee[] @relation("ManagerToEmployees") // List of employees managed by the employee
+
+  // emergency_contact    Address? @relation(fields: [emergency_contact_id], references: [id])
+  // emergency_contact_id String   @db.ObjectId
+  User    User   @relation(fields: [user_id], references: [id])
+  user_id String @unique @db.ObjectId
+}
+
+model Role {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String   @unique
+  description   String?
+  created_by_id String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // 1 to N relationship with the User model.
+  User User[]
+}
+
+model Address {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  country String?
+  state   String?
+  city    String?
+  street  String?
+  zip     String?
+  // One-to-one relationship with the User model.
+  // Links the address to the user it belongs to.
+  User    User    @relation(fields: [user_id], references: [id])
+  user_id String  @unique @db.ObjectId
+}
+
+model AuthOption {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  type        AuthOptionType @unique
+  isEnabled   Boolean        @default(true)
+  preferred   Boolean        @default(true)
+  // N,N Many-to-one relationship with the User model.
+  // Links the authentication option to the user it belongs to.
+  user        User           @relation(fields: [user_id], references: [id])
+  user_id     String         @db.ObjectId
+  description String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model Department {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  name        String     @unique
+  description String?
+  // 1 to N relationship with the Direction model.
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  Employees   Employee[]
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map(name: "sessions")
+}
+
+type Photo {
+  height Int
+  width  Int
+  url    String
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  BANNED
+}
+
+enum EmploymentTypeEnum {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  TEMPORARY
+  INTERN
+  CONSULTANT
+  FREELANCER
+  SEASONAL
+  VOLUNTEER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BANNED
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+  BANNED
+  ON_LEAVE
+}
+
+enum RoleEnum {
+  ADMIN
+  USER
+}
+
+enum EducationLevel {
+  PRIMARY
+  SECONDARY
+  HIGH_SCHOOL
+  BACHELOR
+  MASTER
+  DOCTORATE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum AuthOptionType {
+  PASSWORD
+  TWO_FACTOR
+  MULTI_FACTOR
+  OAUTH
+  JWT
+  OPENID_CONNECT
+  BIOMETRIC
+  PASSKEY
+  SINGLE_SIGN_ON
+  PASSWORDLESS
+  CERTIFICATE
+  TOTP
+}
+
+enum DepartmentEnum {
+  IT
+  SALES
+  MARKETING
+  HR
+  FINANCE
+  ENGINEERING
+  DESIGN
+  OPERATIONS
+  CUSTOMER_SERVICE
+  PRODUCT_MANAGEMENT
+}
+
+enum Position {
+  FRONTEND_DEVELOPER
+  BACKEND_DEVELOPER
+  FULL_STACK_DEVELOPER
+  MOBILE_DEVELOPER
+  UI_DESIGNER
+  UX_DESIGNER
+  DATABASE_ADMINISTRATOR
+  SYSTEMS_ANALYST
+  PROJECT_MANAGER
+  DATA_SCIENTIST
+}

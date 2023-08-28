@@ -1,0 +1,115 @@
+.bg {
+  --scheme: 0, 0, 255;
+  --speed: 15s;
+  position: relative;
+  overflow-y: hidden;
+
+  @media (prefers-color-scheme: light) {
+    --primary-glow: conic-gradient(
+      from 180deg at 50% 50%,
+      rgba(var(--scheme), 0.34) 0deg,
+      rgba(var(--scheme), 0.2) 55deg,
+      rgba(var(--scheme), 0.84) 120deg,
+      rgba(var(--scheme), 0.2) 160deg,
+      transparent 360deg
+    );
+    --secondary-glow: linear-gradient(
+      to bottom right,
+      rgba(var(--scheme), 0),
+      rgba(var(--scheme), 0),
+      rgba(var(--scheme), 0.2)
+    );
+  }
+
+  @media (prefers-color-scheme: dark) {
+    --primary-glow: radial-gradient(
+      rgba(var(--scheme), 0.3),
+      rgba(1, 65, 255, 0)
+    );
+    --secondary-glow: linear-gradient(
+      to bottom right,
+      rgba(var(--scheme), 0),
+      rgba(var(--scheme), 0),
+      rgba(var(--scheme), 0.2)
+    );
+  }
+
+  &:before {
+    background: var(--secondary-glow);
+    left: 20%;
+    animation: loop-1 var(--speed) linear infinite;
+  }
+
+  &:after {
+    background: var(--primary-glow);
+    right: 20%;
+    animation: loop-2 var(--speed) linear infinite;
+  }
+
+  &:before,
+  &:after {
+    content: "";
+    position: absolute;
+    top: 20%;
+    width: 300px;
+    height: 250px;
+    transform: translateZ(0);
+    filter: blur(45px);
+    user-select: none;
+    z-index: 99;
+  }
+}
+
+@keyframes loop-1 {
+  0% {
+    transform: rotate(0deg) translateY(0) translateX(15vh) rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg) translateY(0) translateX(15vh) rotate(360deg);
+  }
+}
+
+@keyframes loop-2 {
+  from {
+    transform: rotate(0deg) translateY(10vh) rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg) translateY(10vh) rotate(360deg);
+  }
+}
+
+.bg-danger {
+  --scheme: 255, 0, 0;
+}
+
+.bg-warn {
+  --scheme: 255, 191, 0;
+}
+
+.bg-success {
+  --scheme: 60, 179, 113;
+}
+
+.bg-info {
+  --scheme: 30, 144, 255;
+}
+
+.bg-primary {
+  --scheme: 0, 0, 255;
+}
+
+.bg-secondary {
+  --scheme: 105, 105, 105;
+}
+
+.bg-light {
+  --scheme: 211, 211, 211;
+}
+
+.bg-dark {
+  --scheme: 47, 79, 79;
+}
+
+.bg-green {
+  --scheme: 0, 255, 0;
+}
